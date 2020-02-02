@@ -72,17 +72,9 @@ public class XenonPlugin extends Plugin{
         });
         
         Events.on(PlayerLeave.class, event -> {
-            int teamPlayerCount = 0;
+            killTiles(event.player.getTeam());
             for (Player player : playerGroup.all()){
-                if (player.getTeam() == event.player.getTeam()){
-                    teamPlayerCount++;
-                }
-            }
-            if(teamPlayerCount <= 1 && !event.player.getTeam().active()){
-                killTiles(event.player.getTeam());
-                for (Player player : playerGroup.all()){
-                    Call.onInfoMessage(player.con, "[lightgray]Team [goldenrod]"+event.player.getTeam().name+" [lightgray]has been [red]eliminated[lightgray].");
-                }
+                Call.onInfoMessage(player.con, "[lightgray]Team [goldenrod]"+event.player.getTeam().name+" [lightgray]has been [red]eliminated[lightgray].");
             }
         });
     }
