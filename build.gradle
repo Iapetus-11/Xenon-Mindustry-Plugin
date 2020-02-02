@@ -1,0 +1,23 @@
+apply plugin: "java"
+
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories{
+    mavenCentral()
+    maven{ url 'https://www.jitpack.io' }
+}
+
+dependencies{
+    def version = "v103"
+    compileOnly "com.github.Anuken.Arc:arc-core:$version"
+    compileOnly "com.github.Anuken.Mindustry:core:$version"
+}
+
+jar{
+    version = null
+    from{
+        configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
+    }
+}
