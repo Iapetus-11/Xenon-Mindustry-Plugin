@@ -74,7 +74,17 @@ public class XenonPlugin extends Plugin{
         Events.on(PlayerLeave.class, event -> {
             killTiles(event.player.getTeam());
             for (Player player : playerGroup.all()){
-                Call.onInfoMessage(player.con, "[lightgray]Team [goldenrod]"+event.player.getTeam().name+" [lightgray]has been [red]eliminated[lightgray].");
+                player.sendMessage("[lightgray]Team [#"+event.player.getTeam().color+"]"+event.player.getTeam().name+" [lightgray]has been [red]eliminated[lightgray].");
+            }
+        });
+        
+        Events.on(BlockDestroyEvent.class, event -> {
+            if(event.tile.block() instanceof CoreBlock){
+                for (Player player : playerGroup.all()){
+                    if (player.getTeam() == event.tile.getTeam()){
+                        player.con.kick("Your core has been destroyed and you have been eliminated!", 0);
+                    }
+                }
             }
         });
     }
@@ -120,7 +130,7 @@ public class XenonPlugin extends Plugin{
                 return;
             }
             
-            Fi fi = new Fi(".\\config\\maps\\xenonpvp1.msav");
+            Fi fi = new Fi(".\\config\\maps\\xenonpvp.msav");
             Map map = new Map(fi, 500, 500, StringMap.of("name", "Xenon PvP"), true, 1, 103);
             
             logic.reset();
@@ -128,6 +138,25 @@ public class XenonPlugin extends Plugin{
             state.rules = rules.copy();
             logic.play();
             netServer.openServer();
+        });
+    }
+    
+    @Override
+    public void registerClientCommands(CommandHandler handler){
+        handler.<Player>register("kick", "<username>", "Kick a user", (args, player) -> {
+            if (args.length == 0){
+                player.sendMessage("[red]Error: [lightgrey]You must specify who to kick!");
+            }
+            if (player.isAdmin){
+                for (Player p : playerGroup.all()){
+                    if (p.name.equals(args[0])){
+                        p.con.kick("Kicked by an administrator");
+                    }
+                }
+                player.sendMessage("Successfully kicked player: "+args[0]);
+            }else{
+                player.sendMessage("You can't use that command because you're not an admin!");
+            }
         });
     }
 }
